@@ -1,194 +1,308 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { NavLink, useLocation, useNavigate } from 'react-router';
-import './Register.css';
-import { FcGoogle } from 'react-icons/fc';
 import useAuth from '../../../hooks/useAuth';
-import { updateProfile } from 'firebase/auth';
 import axios from 'axios';
 import useAxios from '../../../hooks/useAxios';
+import SocialLogin from '../SocialLogin/SocialLogin';
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiUpload, FiCheck } from 'react-icons/fi';
+import { AiOutlineUserAdd } from 'react-icons/ai';
 
 const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { createUser, signInWithGoogle, updateUserProfile } = useAuth();
-
+    const [showPassword, setShowPassword] = useState(false);
+    const [registerError, setRegisterError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const [profilePic, setProfilePic] = useState('');
+    const [uploadedFileName, setUploadedFileName] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
     const axiosInstance = useAxios();
     const from = location.state?.from || '/';
 
-
     // On form submit
-    const onSubmit = data => {
+    const onSubmit = async (data) => {
+        setRegisterError('');
+        setIsLoading(true);
 
-        console.log(data);
+        try {
+            const result = await createUser(data.email, data.password);
+            console.log(result.user);
 
-        createUser(data.email, data.password)
-            .then(async (result) => {
-                console.log(result.user);
+            // Update userinfo in the database
+            const userInfo = {
+                email: data.email,
+                role: 'user',
+                created_at: new Date().toISOString(),
+                last_log_in: new Date().toISOString()
+            };
 
+            const userRes = await axiosInstance.post('/users', userInfo);
+            console.log(userRes.data);
 
-                // update userinfo in the database
-                const userInfo = {
-                    email: data.email,
-                    role: 'user', // default role
-                    created_at: new Date().toISOString(),
-                    last_log_in: new Date().toISOString()
-                }
+            // Update user profile in firebase
+            const userProfile = {
+                displayName: data.name,
+                photoURL: profilePic || 'https://i.postimg.cc/CLLByb9g/default-avatar.png'
+            };
 
-                const userRes = await axiosInstance.post('/users', userInfo);
-                console.log(userRes.data);
-
-                // update user profile in firebase
-                const userProfile = {
-                    displayName: data.name,
-                    photoURL: profilePic
-                }
-                updateUserProfile(userProfile)
-                    .then(() => {
-                        console.log('profile name pic updated')
-                        navigate(from);
-                    })
-                    .catch(error => {
-                        console.log(error)
-                    })
-
-            })
-            .catch(error => {
-                console.error(error);
-            })
-    }
-
-    const handleGoogleSignIn = () => {
-        signInWithGoogle()
-            .then(async (result) => {
-                const user = result.user;
-                console.log(result.user);
-                // update userinfo in the database
-                const userInfo = {
-                    email: user.email,
-                    role: 'user', // default role
-                    created_at: new Date().toISOString(),
-                    last_log_in: new Date().toISOString()
-                }
-
-                const res = await axiosInstance.post('/users', userInfo);
-                console.log('user update info', res.data)
-
-                navigate(from);
-            })
-            .catch(error => {
-                console.error(error);
-            })
-
-    }
+            await updateUserProfile(userProfile);
+            console.log('Profile name and pic updated');
+            navigate(from);
+        } catch (error) {
+            console.error(error);
+            setRegisterError(error.message || "Registration failed. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleImageUpload = async (e) => {
         const image = e.target.files[0];
-        console.log(image)
+        if (!image) return;
 
-        const formData = new FormData();
-        formData.append('image', image);
+        setIsUploading(true);
+        setUploadedFileName(image.name);
 
+        try {
+            const formData = new FormData();
+            formData.append('image', image);
 
-        const imagUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`
-        const res = await axios.post(imagUploadUrl, formData)
+            const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`;
+            const res = await axios.post(imageUploadUrl, formData);
 
-        setProfilePic(res.data.data.url);
-
-
-    }
-
-
-
+            setProfilePic(res.data.data.url);
+        } catch (error) {
+            console.error('Image upload failed:', error);
+            setUploadedFileName('');
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     return (
-        <div className='flex flex-col lg:flex-row items-center justify-center mx-16 lg:mx-20 gap-0 w-full px-6'>
-            {/* Left Section: Form */}
-            <div className='w-full lg:w-1/2'>
-                <h1 className='text-3xl lg:text-5xl font-bold text-base-200 text-left'>Create an Account</h1>
-                <p className='text-accent font-semibold mb-4 mt-2'>Register with Profast</p>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <fieldset className="fieldset">
-                        {/* name field */}
-                        <label className="label">Your Name</label>
-                        <input type="text"
-                            {...register('name', { required: true })}
-                            className="input w-2/3" placeholder="Your Name" />
-                        {
-                            errors.name?.type === 'required' && <p className='text-red-500'>Name is required</p>
-                        }
-                        {/* Photo field */}
-                        <label className="label">Your Profile Picture</label>
-                        <input type="file"
-                            onChange={handleImageUpload}
-                            className="input w-2/3" placeholder="Your Profile picture" />
+        <div className='min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-base-200/5 via-white to-secondary/5'>
+            <div className='w-full max-w-6xl mx-auto'>
+                <div className='flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16'>
 
+                    {/* Left Section: Form */}
+                    <div className='w-full lg:w-1/2 bg-white rounded-2xl shadow-2xl p-8 lg:p-12 border border-gray-100'>
+                        {/* Header */}
+                        <div className='mb-8'>
+                            <div className='flex items-center gap-3 mb-3'>
+                                <div className='w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center'>
+                                    <AiOutlineUserAdd className='text-secondary text-2xl' />
+                                </div>
+                                <h1 className='text-3xl lg:text-4xl font-bold text-base-200'>
+                                    Create Account
+                                </h1>
+                            </div>
+                            <p className='text-accent text-base ml-1'>
+                                Join GO Parcel and start your journey
+                            </p>
+                        </div>
 
+                        {/* Form */}
+                        <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
+                            {/* Name Input */}
+                            <div>
+                                <label className="block text-sm font-semibold text-base-200 mb-2">
+                                    Full Name
+                                </label>
+                                <div className='relative'>
+                                    <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+                                        <FiUser className='text-gray-400 text-xl' />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className={`w-full pl-12 pr-4 py-3.5 border-2 rounded-xl transition-all duration-200 focus:outline-none ${errors.name
+                                                ? 'border-red-300 focus:border-red-500'
+                                                : 'border-gray-200 focus:border-secondary'
+                                            }`}
+                                        placeholder="Enter your full name"
+                                        {...register('name', { required: "Name is required" })}
+                                    />
+                                </div>
+                                {errors.name && (
+                                    <p className='text-red-500 text-sm mt-1.5 ml-1 flex items-center gap-1'>
+                                        <span>⚠</span> {errors.name.message}
+                                    </p>
+                                )}
+                            </div>
 
-                        {/* Email Input */}
-                        <label className="label">Email</label>
-                        <input
-                            type="email"
-                            className="input w-2/3"
-                            placeholder="Email"
-                            {...register('email', {
-                                required: "Email is required",  // Custom error message
-                                pattern: {
-                                    value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                                    message: "Enter a valid email address" // Custom pattern error message
-                                }
-                            })}
-                            aria-invalid={errors.email ? "true" : "false"}
+                            {/* Profile Picture Upload */}
+                            <div>
+                                <label className="block text-sm font-semibold text-base-200 mb-2">
+                                    Profile Picture (Optional)
+                                </label>
+                                <div className='relative'>
+                                    <input
+                                        type="file"
+                                        id="profile-upload"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                    />
+                                    <label
+                                        htmlFor="profile-upload"
+                                        className='w-full flex items-center gap-3 px-4 py-3.5 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-secondary hover:bg-secondary/5 transition-all duration-200'
+                                    >
+                                        <div className='w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center'>
+                                            {isUploading ? (
+                                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-secondary"></div>
+                                            ) : profilePic ? (
+                                                <FiCheck className='text-secondary text-xl' />
+                                            ) : (
+                                                <FiUpload className='text-secondary text-xl' />
+                                            )}
+                                        </div>
+                                        <div className='flex-1'>
+                                            <p className='text-sm font-medium text-base-200'>
+                                                {isUploading ? 'Uploading...' : profilePic ? 'Image uploaded!' : 'Choose a profile picture'}
+                                            </p>
+                                            {uploadedFileName && (
+                                                <p className='text-xs text-gray-500 truncate'>{uploadedFileName}</p>
+                                            )}
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Email Input */}
+                            <div>
+                                <label className="block text-sm font-semibold text-base-200 mb-2">
+                                    Email Address
+                                </label>
+                                <div className='relative'>
+                                    <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+                                        <FiMail className='text-gray-400 text-xl' />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        className={`w-full pl-12 pr-4 py-3.5 border-2 rounded-xl transition-all duration-200 focus:outline-none ${errors.email
+                                                ? 'border-red-300 focus:border-red-500'
+                                                : 'border-gray-200 focus:border-secondary'
+                                            }`}
+                                        placeholder="Enter your email"
+                                        {...register('email', {
+                                            required: "Email is required",
+                                            pattern: {
+                                                value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                                message: "Enter a valid email address"
+                                            }
+                                        })}
+                                    />
+                                </div>
+                                {errors.email && (
+                                    <p className='text-red-500 text-sm mt-1.5 ml-1 flex items-center gap-1'>
+                                        <span>⚠</span> {errors.email.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Password Input */}
+                            <div>
+                                <label className="block text-sm font-semibold text-base-200 mb-2">
+                                    Password
+                                </label>
+                                <div className='relative'>
+                                    <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+                                        <FiLock className='text-gray-400 text-xl' />
+                                    </div>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        className={`w-full pl-12 pr-12 py-3.5 border-2 rounded-xl transition-all duration-200 focus:outline-none ${errors.password
+                                                ? 'border-red-300 focus:border-red-500'
+                                                : 'border-gray-200 focus:border-secondary'
+                                            }`}
+                                        placeholder="Create a strong password"
+                                        {...register('password', {
+                                            required: "Password is required",
+                                            minLength: {
+                                                value: 6,
+                                                message: "Password must be at least 6 characters"
+                                            },
+                                            pattern: {
+                                                value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                                                message: "Include letter, number, and special character"
+                                            }
+                                        })}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className='absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-base-200 transition-colors'
+                                    >
+                                        {showPassword ? <FiEyeOff className='text-xl' /> : <FiEye className='text-xl' />}
+                                    </button>
+                                </div>
+                                {errors.password && (
+                                    <p className='text-red-500 text-sm mt-1.5 ml-1 flex items-center gap-1'>
+                                        <span>⚠</span> {errors.password.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Error Message */}
+                            {registerError && (
+                                <div className='bg-red-50 border-l-4 border-red-500 p-4 rounded-lg'>
+                                    <p className="text-red-700 text-sm font-medium">{registerError}</p>
+                                </div>
+                            )}
+
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                disabled={isLoading || isUploading}
+                                className="w-full py-4 bg-gradient-to-r from-secondary to-secondary/90 text-base-200 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                            >
+                                {isLoading ? (
+                                    <span className='flex items-center justify-center gap-2'>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-base-200"></div>
+                                        Creating Account...
+                                    </span>
+                                ) : (
+                                    'Create Account'
+                                )}
+                            </button>
+                        </form>
+
+                        {/* Social Login */}
+                        <SocialLogin
+                            handleGoogleSignIn={signInWithGoogle}
+                            from={from}
+                            navigate={navigate}
+                            axiosInstance={axiosInstance}
+                            isRegister={true}
                         />
-                        {errors.email && (
-                            <p className='text-red-600' role="alert">{errors.email.message}</p>
-                        )}
 
-                        {/* Password Input */}
-                        <label className="label">Password</label>
-                        <input
-                            type="password"
-                            className="input w-2/3"
-                            placeholder="Password"
-                            {...register('password', {
-                                required: "Password is required",  // Custom error message
-                                minLength: {
-                                    value: 6,
-                                    message: "Password must be at least 6 characters long" // Custom minLength error message
-                                },
-                                pattern: {
-                                    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/, // Password must have at least one letter, one number, and one special character
-                                    message: "Password must include at least one letter, one number, and one special character"
-                                }
-                            })}
-                            aria-invalid={errors.password ? "true" : "false"}
-                        />
-                        {errors.password && (
-                            <p className='text-red-600' role="alert">{errors.password.message}</p>
-                        )}
+                        {/* Login Link */}
+                        <p className='mt-8 text-center text-gray-600'>
+                            Already have an account?{' '}
+                            <NavLink
+                                to='/login'
+                                className='text-base-300 font-bold hover:text-base-200 transition-colors'
+                            >
+                                Sign In
+                            </NavLink>
+                        </p>
+                    </div>
 
-                        {/* Forgot Password Link */}
-                        <div><a className="link link-hover">Forgot password?</a></div>
-
-                        {/* Submit Button */}
-                        <button className="btn h-12 shadow-md hover:shadow-xl btn-secondary text-base-200 mt-4 w-2/3">Register</button>
-                    </fieldset>
-                </form>
-                <p className='mt-4'>Already have an account ?<span className='text-blue-600 font-semibold link link-hover ml-2'><NavLink to='/login'>Login</NavLink> </span></p>
-                <div className="divider w-2/3">OR</div>
-                <button onClick={handleGoogleSignIn} className=" flex justify-center items-center h-12 font-semibold text-base-200 gap-2 rounded-lg border-none w-2/3 bg-white  shadow-md hover:shadow-xl  hover:bg-secondary hover:text-base-200">
-                    <FcGoogle size={25} />
-                    Register with Google
-                </button>
+                    {/* Right Section: Image */}
+                    <div className='hidden lg:block lg:w-1/2'>
+                        <div className='relative'>
+                            <div className='absolute -inset-4 bg-gradient-to-r from-secondary/20 to-base-300/20 rounded-3xl blur-2xl'></div>
+                            <img
+                                src="https://i.postimg.cc/gjmM6RDr/register.png"
+                                alt="Register illustration"
+                                className='relative rounded-2xl shadow-2xl w-full h-auto object-cover'
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            {/* Right Section: Image */}
-            <div >
-                <img className='im-with' src="https://i.postimg.cc/gjmM6RDr/register.png" alt="Authentication" />
-            </div>
-
         </div>
     );
 };

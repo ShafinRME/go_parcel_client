@@ -133,126 +133,301 @@ const SendParcel = () => {
     };
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                {/* Heading */}
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold">Send a Parcel</h2>
-                    <p className="text-gray-500">Fill in the details below</p>
+        <div className="min-h-screen bg-gradient-to-br from-[#EAECED] via-[#f5f5f5] to-[#e0e7ea] py-8 px-4 font-urbanist">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="text-center mb-10 relative">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-5">
+                        <svg width="400" height="100" viewBox="0 0 400 100" className="text-[#018790]">
+                            <path d="M50 50 L100 30 L150 50 L100 70 Z" fill="currentColor"/>
+                            <path d="M200 50 L250 30 L300 50 L250 70 Z" fill="currentColor"/>
+                            <rect x="320" y="40" width="60" height="20" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h1 className="text-5xl font-bold text-[#001F3D] mb-2 tracking-tight relative">
+                        Send a Parcel
+                    </h1>
+                    <div className="w-24 h-1 bg-gradient-to-r from-[#018790] to-[#CAEB66] mx-auto mb-3"></div>
+                    <p className="text-[#706f6f] text-lg">Fill in the details below to ship your package</p>
                 </div>
 
-                {/* Parcel Info */}
-                <div className="border p-4 rounded-xl shadow-md space-y-4">
-                    <h3 className="font-semibold text-xl">Parcel Info</h3>
-                    <div className="space-y-4">
-                        {/* Parcel Name */}
-                        <div>
-                            <label className="label">Parcel Name</label>
-                            <input
-                                {...register("title", { required: true })}
-                                className="input input-bordered w-full"
-                                placeholder="Describe your parcel"
-                            />
-                            {errors.title && <p className="text-red-500 text-sm">Parcel name is required</p>}
-                        </div>
-
-                        {/* Type */}
-                        <div>
-                            <label className="label">Type</label>
-                            <div className="flex gap-4">
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="document"
-                                        {...register("type", { required: true })}
-                                        className="radio"
-                                    />
-                                    Document
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="non-document"
-                                        {...register("type", { required: true })}
-                                        className="radio"
-                                    />
-                                    Non-Document
-                                </label>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    {/* Parcel Info Card */}
+                    <div className="bg-white rounded-2xl shadow-xl border-l-4 border-[#018790] p-8 transform transition-all duration-300 hover:shadow-2xl">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-gradient-to-br from-[#018790] to-[#CAEB66] rounded-lg flex items-center justify-center">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
                             </div>
-                            {errors.type && <p className="text-red-500 text-sm">Type is required</p>}
+                            <h3 className="text-2xl font-bold text-[#001F3D]">Parcel Information</h3>
                         </div>
 
-                        {/* Weight */}
-                        <div>
-                            <label className="label">Weight (kg)</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                {...register("weight")}
-                                disabled={parcelType !== "non-document"}
-                                className={`input input-bordered w-full ${parcelType !== "non-document" ? "bg-gray-100 cursor-not-allowed" : ""
-                                    }`}
-                                placeholder="Enter weight"
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Parcel Name */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-[#001F3D] mb-2">
+                                    Parcel Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    {...register("title", { required: true })}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20 outline-none transition-all duration-200"
+                                    placeholder="e.g., Electronics, Documents, Clothing"
+                                />
+                                {errors.title && (
+                                    <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                        <span>⚠</span> Parcel name is required
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Type */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-[#001F3D] mb-3">
+                                    Parcel Type <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex gap-4">
+                                    <label className="flex-1 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            value="document"
+                                            {...register("type", { required: true })}
+                                            className="peer sr-only"
+                                        />
+                                        <div className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl peer-checked:border-[#018790] peer-checked:bg-[#018790]/5 transition-all duration-200 hover:border-[#018790]/50">
+                                            <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-[#018790] peer-checked:bg-[#018790] flex items-center justify-center">
+                                                <div className="w-2 h-2 bg-white rounded-full hidden peer-checked:block"></div>
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-[#001F3D]">Document</p>
+                                                <p className="text-xs text-[#706f6f]">Papers, certificates, letters</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <label className="flex-1 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            value="non-document"
+                                            {...register("type", { required: true })}
+                                            className="peer sr-only"
+                                        />
+                                        <div className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl peer-checked:border-[#018790] peer-checked:bg-[#018790]/5 transition-all duration-200 hover:border-[#018790]/50">
+                                            <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-[#018790] peer-checked:bg-[#018790] flex items-center justify-center">
+                                                <div className="w-2 h-2 bg-white rounded-full hidden peer-checked:block"></div>
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-[#001F3D]">Non-Document</p>
+                                                <p className="text-xs text-[#706f6f]">Products, packages, goods</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                {errors.type && (
+                                    <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                                        <span>⚠</span> Parcel type is required
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Weight */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-[#001F3D] mb-2">
+                                    Weight (kg) {parcelType !== "non-document" && <span className="text-[#706f6f] font-normal text-xs">(Not applicable for documents)</span>}
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        {...register("weight")}
+                                        disabled={parcelType !== "non-document"}
+                                        className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none transition-all duration-200 ${
+                                            parcelType !== "non-document" 
+                                                ? "bg-gray-50 cursor-not-allowed text-gray-400" 
+                                                : "focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20"
+                                        }`}
+                                        placeholder="Enter weight in kilograms"
+                                    />
+                                    <span className="absolute right-4 top-3 text-[#706f6f]">kg</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
+                    {/* Sender & Receiver Info Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Sender Info */}
+                        <div className="bg-white rounded-2xl shadow-xl border-t-4 border-[#CAEB66] p-8 transform transition-all duration-300 hover:shadow-2xl">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 bg-gradient-to-br from-[#CAEB66] to-[#018790] rounded-lg flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-[#001F3D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-[#001F3D]">Sender Details</h3>
+                            </div>
 
-                {/* Sender & Receiver Info */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Sender Info */}
-                    <div className="border p-4 rounded-xl shadow-md space-y-4">
-                        <h3 className="font-semibold text-xl">Sender Info</h3>
-                        <div className="grid grid-cols-1 gap-4">
-                            <input {...register("sender_name", { required: true })} className="input input-bordered w-full" placeholder="Name" />
-                            <input {...register("sender_contact", { required: true })} className="input input-bordered w-full" placeholder="Contact" />
-                            <select {...register("sender_region", { required: true })} className="select select-bordered w-full">
-                                <option value="">Select Region</option>
-                                {uniqueRegions.map((region) => (
-                                    <option key={region} value={region}>{region}</option>
-                                ))}
-                            </select>
-                            <select {...register("sender_center", { required: true })} className="select select-bordered w-full">
-                                <option value="">Select Service Center</option>
-                                {getDistrictsByRegion(senderRegion).map((district) => (
-                                    <option key={district} value={district}>{district}</option>
-                                ))}
-                            </select>
-                            <input {...register("sender_address", { required: true })} className="input input-bordered w-full" placeholder="Address" />
-                            <textarea {...register("pickup_instruction", { required: true })} className="textarea textarea-bordered w-full" placeholder="Pickup Instruction" />
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Full Name <span className="text-red-500">*</span></label>
+                                    <input
+                                        {...register("sender_name", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#CAEB66] focus:ring-2 focus:ring-[#CAEB66]/20 outline-none transition-all"
+                                        placeholder="Enter sender's name"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Contact Number <span className="text-red-500">*</span></label>
+                                    <input
+                                        {...register("sender_contact", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#CAEB66] focus:ring-2 focus:ring-[#CAEB66]/20 outline-none transition-all"
+                                        placeholder="Phone number"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Region <span className="text-red-500">*</span></label>
+                                    <select
+                                        {...register("sender_region", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#CAEB66] focus:ring-2 focus:ring-[#CAEB66]/20 outline-none transition-all bg-white"
+                                    >
+                                        <option value="">Select Region</option>
+                                        {uniqueRegions.map((region) => (
+                                            <option key={region} value={region}>{region}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Service Center <span className="text-red-500">*</span></label>
+                                    <select
+                                        {...register("sender_center", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#CAEB66] focus:ring-2 focus:ring-[#CAEB66]/20 outline-none transition-all bg-white"
+                                    >
+                                        <option value="">Select Service Center</option>
+                                        {getDistrictsByRegion(senderRegion).map((district) => (
+                                            <option key={district} value={district}>{district}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Address <span className="text-red-500">*</span></label>
+                                    <input
+                                        {...register("sender_address", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#CAEB66] focus:ring-2 focus:ring-[#CAEB66]/20 outline-none transition-all"
+                                        placeholder="Street address"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Pickup Instructions <span className="text-red-500">*</span></label>
+                                    <textarea
+                                        {...register("pickup_instruction", { required: true })}
+                                        rows="3"
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#CAEB66] focus:ring-2 focus:ring-[#CAEB66]/20 outline-none transition-all resize-none"
+                                        placeholder="Special instructions for pickup..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Receiver Info */}
+                        <div className="bg-white rounded-2xl shadow-xl border-t-4 border-[#018790] p-8 transform transition-all duration-300 hover:shadow-2xl">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 bg-gradient-to-br from-[#018790] to-[#001F3D] rounded-lg flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-[#001F3D]">Receiver Details</h3>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Full Name <span className="text-red-500">*</span></label>
+                                    <input
+                                        {...register("receiver_name", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20 outline-none transition-all"
+                                        placeholder="Enter receiver's name"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Contact Number <span className="text-red-500">*</span></label>
+                                    <input
+                                        {...register("receiver_contact", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20 outline-none transition-all"
+                                        placeholder="Phone number"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Region <span className="text-red-500">*</span></label>
+                                    <select
+                                        {...register("receiver_region", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20 outline-none transition-all bg-white"
+                                    >
+                                        <option value="">Select Region</option>
+                                        {uniqueRegions.map((region) => (
+                                            <option key={region} value={region}>{region}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Service Center <span className="text-red-500">*</span></label>
+                                    <select
+                                        {...register("receiver_center", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20 outline-none transition-all bg-white"
+                                    >
+                                        <option value="">Select Service Center</option>
+                                        {getDistrictsByRegion(receiverRegion).map((district) => (
+                                            <option key={district} value={district}>{district}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Address <span className="text-red-500">*</span></label>
+                                    <input
+                                        {...register("receiver_address", { required: true })}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20 outline-none transition-all"
+                                        placeholder="Street address"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#001F3D] mb-2">Delivery Instructions <span className="text-red-500">*</span></label>
+                                    <textarea
+                                        {...register("delivery_instruction", { required: true })}
+                                        rows="3"
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/20 outline-none transition-all resize-none"
+                                        placeholder="Special instructions for delivery..."
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Receiver Info */}
-                    <div className="border p-4 rounded-xl shadow-md space-y-4">
-                        <h3 className="font-semibold text-xl">Receiver Info</h3>
-                        <div className="grid grid-cols-1 gap-4">
-                            <input {...register("receiver_name", { required: true })} className="input input-bordered w-full" placeholder="Name" />
-                            <input {...register("receiver_contact", { required: true })} className="input input-bordered w-full" placeholder="Contact" />
-                            <select {...register("receiver_region", { required: true })} className="select select-bordered w-full">
-                                <option value="">Select Region</option>
-                                {uniqueRegions.map((region) => (
-                                    <option key={region} value={region}>{region}</option>
-                                ))}
-                            </select>
-                            <select {...register("receiver_center", { required: true })} className="select select-bordered w-full">
-                                <option value="">Select Service Center</option>
-                                {getDistrictsByRegion(receiverRegion).map((district) => (
-                                    <option key={district} value={district}>{district}</option>
-                                ))}
-                            </select>
-                            <input {...register("receiver_address", { required: true })} className="input input-bordered w-full" placeholder="Address" />
-                            <textarea {...register("delivery_instruction", { required: true })} className="textarea textarea-bordered w-full" placeholder="Delivery Instruction" />
-                        </div>
+                    {/* Submit Button */}
+                    <div className="text-center pt-4">
+                        <button 
+                            type="submit"
+                            className="group relative px-12 py-4 bg-gradient-to-r from-[#018790] to-[#CAEB66] text-[#001F3D] font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                        >
+                            <span className="relative z-10 flex items-center gap-2 justify-center">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                Send Parcel
+                            </span>
+                            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </button>
                     </div>
-                </div>
-
-                {/* Submit Button */}
-                <div className="text-center">
-                    <button className="btn btn-secondary text-black">Send Parcel</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     );
 };

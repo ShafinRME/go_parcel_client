@@ -16,6 +16,7 @@ const HowWorks = () => {
 
     useEffect(() => {
         // Load the data from JSON file
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setData(HowItWorksData);
     }, []);
     return (

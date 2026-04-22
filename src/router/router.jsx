@@ -25,6 +25,7 @@ import CompletedDeliveries from "../pages/Dashboard/CompletedDeliveries/Complete
 import MyEarnings from "../pages/Dashboard/MyEarnings/MyEarnings";
 import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome";
 import About from "../pages/AboutUs/About";
+import AdminTrackingManager from "../pages/Dashboard/AdminTrackingManager/AdminTrackingManager";
 
 
 export const router = createBrowserRouter([
@@ -39,13 +40,12 @@ export const router = createBrowserRouter([
             {
                 path: 'coverage',
                 element: <PrivateRoute> <Coverage /> </PrivateRoute>,
-                loader: () => fetch('/public/warehouses.json')
+                loader: () => fetch('/warehouses.json')
             },
 
             {
                 path: "about",
                 Component: About,
-                loader: () => fetch("/public/aboutdata.json"),
             },
 
 
@@ -57,12 +57,12 @@ export const router = createBrowserRouter([
             {
                 path: 'beARider',
                 element: <PrivateRoute> <BeARider></BeARider> </PrivateRoute>,
-                loader: () => fetch('/public/warehouses.json')
+                loader: () => fetch('/warehouses.json')
             },
             {
                 path: 'sendParcel',
                 element: <PrivateRoute> <SendParcel></SendParcel> </PrivateRoute>,
-                loader: () => fetch('/public/warehouses.json')
+                loader: () => fetch('/warehouses.json')
             }
         ]
     },
@@ -136,6 +136,10 @@ export const router = createBrowserRouter([
             {
                 path: 'makeAdmin',
                 element: <AdminRoute> <MakeAdmin></MakeAdmin> </AdminRoute>,
+            },
+            {
+                path: 'admin-tracking',
+                element: <AdminRoute> <AdminTrackingManager></AdminTrackingManager> </AdminRoute>,
             }
         ]
     }

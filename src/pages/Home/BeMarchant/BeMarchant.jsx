@@ -11,7 +11,7 @@ const BeMarchant = () => {
                 </p>
                 <div className="buttons flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-4 mt-6">
                     <button className="btn btn-secondary mr-4 text-base-200 rounded-3xl hover:scale-103">Become a Merchant</button>
-                    <button className="btn btn-base-200 border-1 border-secondary mr-4 text-primary rounded-3xl hover:scale-103">Earn with Profast Courier</button>
+                    <button className="btn btn-base-200 border-1 border-secondary mr-4 text-primary rounded-3xl hover:scale-103">Earn with GO Parcel Courier</button>
                 </div>
             </div >
 
