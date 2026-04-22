@@ -1,73 +1,125 @@
 import React, { useState } from 'react';
+import { FaQuestionCircle, FaChevronDown } from 'react-icons/fa';
 
 const FAQ = () => {
-    // Track which accordion is open
     const [openIndex, setOpenIndex] = useState(null);
 
+    const faqs = [
+        {
+            question: "How fast is your delivery service?",
+            answer: "We offer same-day delivery for parcels booked before 12 PM within the same city. For inter-city deliveries, we guarantee delivery within 24-48 hours. Our express service can deliver urgent parcels within 3-6 hours in major cities."
+        },
+        {
+            question: "How can I track my parcel?",
+            answer: "You can track your parcel in real-time using your unique tracking ID. Simply enter the tracking number on our website or mobile app, and you'll see live updates including pickup, transit, and delivery status with estimated arrival times."
+        },
+        {
+            question: "What areas do you cover?",
+            answer: "We provide nationwide coverage across Bangladesh, serving all 64 districts. Our extensive network includes major cities, towns, and remote areas. We have pickup and delivery points in every district to ensure comprehensive service."
+        },
+        {
+            question: "Is my parcel insured during delivery?",
+            answer: "Yes, all parcels are automatically insured up to ৳10,000 at no extra cost. For higher-value items, you can purchase additional insurance coverage during booking. We take full responsibility for any loss or damage during transit."
+        },
+        {
+            question: "What payment methods do you accept?",
+            answer: "We accept multiple payment methods including Cash on Delivery (COD), bKash, Nagad, Rocket, credit/debit cards, and bank transfers. For business accounts, we also offer monthly invoicing options."
+        },
+        {
+            question: "Can I schedule a pickup from my location?",
+            answer: "Absolutely! You can schedule a pickup at your preferred time and location through our website or mobile app. Our riders will come to your doorstep to collect the parcel. Pickup services are available 7 days a week from 9 AM to 9 PM."
+        }
+    ];
+
+    const toggleAccordion = (index) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
+
     return (
-        <div data-aos="zoom-out" data-aos-offset="300" data-aos-duration="2500" className="flex flex-col gap-4 w-15/16 mx-auto my-12 p-4">
-            <h1 className='text-5xl text-base-200 font-bold text-center mt-4 mb-4'>Frequently Asked Question (FAQ)</h1>
-            <p className='text-accent font-semibold w-2/3 mx-auto text-center mb-6 mt-4'>Enhance posture, mobility, and well-being effortlessly with Posture Pro. Achieve proper alignment, reduce pain, and strengthen your body with ease!</p>
+        <div
+            className="w-full bg-gradient-to-b from-gray-50 to-white py-16 px-4"
+            data-aos="fade-up"
+            data-aos-duration="800"
+            data-aos-once="true"
+        >
+            <div className="max-w-4xl mx-auto">
+                {/* Header */}
+                <div className="text-center mb-12">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-secondary rounded-full mb-4">
+                        <FaQuestionCircle className="text-3xl text-base-200" />
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold text-base-200 mb-4">
+                        Frequently Asked Questions
+                    </h2>
+                    <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                        Get answers to common questions about our delivery service, pricing, and coverage areas
+                    </p>
+                </div>
 
-            <div
-                className={`collapse collapse-arrow ${openIndex === 0 ? 'bg-[#EAECED] text-base-200 border border-base-200' : 'bg-base-100 border border-base-300'}`}
-                onClick={() => setOpenIndex(openIndex === 0 ? null : 0)}
-                data-aos={openIndex === null ? "fade-right" : ""}
-                data-aos-offset="300"
-                data-aos-duration="500"
-            >
-                <input type="radio" name="my-accordion-2" defaultChecked={openIndex === 0} readOnly />
-                <div className="collapse-title font-semibold">How does this posture corrector work?</div>
-                <div className="collapse-content text-sm">
-                    <hr className="w-full border-solid border-accent border-t-2 opacity-30 mb-4" />
-                    A posture corrector works by providing support and gentle alignment to your shoulders, back, and spine, encouraging you to maintain proper posture throughout the day. Here's how it typically functions: it gently aligns your shoulders and back, helping you to stay mindful of your posture and avoid slouching.
+                {/* FAQ Items */}
+                <div className="space-y-4">
+                    {faqs.map((faq, index) => (
+                        <div
+                            key={index}
+                            className={`bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 ${openIndex === index ? 'border-secondary' : 'border-transparent'
+                                }`}
+                        >
+                            <button
+                                onClick={() => toggleAccordion(index)}
+                                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors duration-200"
+                            >
+                                <span className="text-lg font-semibold text-base-200 pr-4">
+                                    {faq.question}
+                                </span>
+                                <FaChevronDown
+                                    className={`text-secondary flex-shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''
+                                        }`}
+                                    size={20}
+                                />
+                            </button>
+
+                            {openIndex === index && (
+                                <div className="px-6 pb-5 pt-2 animate-fadeIn">
+                                    <div className="h-px bg-gradient-to-r from-transparent via-secondary to-transparent mb-4"></div>
+                                    <p className="text-gray-700 leading-relaxed">
+                                        {faq.answer}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {/* CTA Section */}
+                <div className="mt-12 text-center bg-gradient-to-r from-base-200 to-base-300 rounded-xl p-8">
+                    <h3 className="text-2xl font-bold text-white mb-3">
+                        Still have questions?
+                    </h3>
+                    <p className="text-gray-200 mb-6">
+                        Our support team is here to help you 24/7
+                    </p>
+                    <button className="px-8 py-3 bg-secondary text-base-200 rounded-lg font-bold hover:bg-secondary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+                        Contact Support
+                    </button>
                 </div>
             </div>
 
-            <div
-                className={`collapse collapse-arrow ${openIndex === 1 ? 'bg-[#EAECED] text-base-200 border border-base-200' : 'bg-base-100 border border-base-300'}`}
-                onClick={() => setOpenIndex(openIndex === 1 ? null : 1)}
-                data-aos={openIndex === null ? "fade-left" : ""}
-                data-aos-offset="300"
-                data-aos-duration="500"
-            >
-                <input type="radio" name="my-accordion-2" defaultChecked={openIndex === 1} readOnly />
-                <div className="collapse-title font-semibold">Is it suitable for all ages and body types?</div>
-                <div className="collapse-content text-sm">
-                    <hr className="w-full border-solid border-accent border-t-2 opacity-30 mb-4" />
-                    Yes, the posture corrector is designed to be adjustable and can be used by individuals of all ages and body types. Whether you're a teenager or an adult, it can help provide the necessary support for optimal posture.
-                </div>
-            </div>
+            <style jsx>{`
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
 
-            <div
-                className={`collapse collapse-arrow ${openIndex === 2 ? 'bg-[#EAECED] text-base-200 border border-base-200' : 'bg-base-100 border border-base-300'}`}
-                onClick={() => setOpenIndex(openIndex === 2 ? null : 2)}
-                data-aos={openIndex === null ? "fade-right" : ""}
-                data-aos-offset="300"
-                data-aos-duration="500"
-            >
-                <input type="radio" name="my-accordion-2" defaultChecked={openIndex === 2} readOnly />
-                <div className="collapse-title font-semibold">Does it really help with back pain and posture improvement?</div>
-                <div className="collapse-content text-sm">
-                    <hr className="w-full border-solid border-accent border-t-2 opacity-30 mb-4" />
-                    Yes, the posture corrector is designed to provide support that alleviates back pain caused by poor posture. By promoting better posture, it encourages your spine to align properly, which can result in long-term improvements in posture and reduction of back pain.
-                </div>
-            </div>
-
-            <div
-                className={`collapse collapse-arrow ${openIndex === 3 ? 'bg-[#EAECED] text-base-200 border border-base-200' : 'bg-base-100 border border-base-300'}`}
-                onClick={() => setOpenIndex(openIndex === 3 ? null : 3)}
-                data-aos={openIndex === null ? "fade-left" : ""}
-                data-aos-offset="300"
-                data-aos-duration="500"
-            >
-                <input type="radio" name="my-accordion-2" defaultChecked={openIndex === 3} readOnly />
-                <div className="collapse-title font-semibold">How will I be notified when the product is back in stock?</div>
-                <div className="collapse-content text-sm">
-                    <hr className="w-full border-solid border-accent border-t-2 opacity-30 mb-4" />
-                    You can sign up for notifications on the product page. Once the product is back in stock, you will receive an email or a push notification informing you that it's available for purchase again.
-                </div>
-            </div>
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
+                }
+            `}</style>
         </div>
     );
 };

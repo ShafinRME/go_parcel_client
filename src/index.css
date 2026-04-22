@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@import 'aos/dist/aos.css';
+
 @plugin "daisyui" {
     themes: light --default;
 }
