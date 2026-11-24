@@ -1,16 +1,27 @@
-# React + Vite
+# Lumen & Co. — Storefront & Admin
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + Vite 7 + Tailwind CSS 4 storefront with a full admin dashboard. Data comes from the Lumen & Co. API (`e-commerce_1_server`).
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+npm run dev        # http://localhost:5173
+```
 
-## React Compiler
+`.env.local` needs the Firebase web config (`VITE_apiKey`, `VITE_authDomain`, `VITE_projectId`, `VITE_storageBucket`, `VITE_messagingSenderId`, `VITE_appId`), the Stripe **publishable** key (`VITE_payment_Key`) and the API URL (`VITE_BASE_URL`). For local development `.env.development.local` points `VITE_BASE_URL` at `http://localhost:5000`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Only public values belong here — everything prefixed `VITE_` is shipped to the browser.
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Store:** dynamic hero banners, categories mega-menu, live search suggestions, shop with filters (category, brand, price, rating, stock, sale) and URL-synced sorting/pagination, quick view, product gallery with zoom, colour/size options, reviews with verified-buyer badges, wishlist, recently viewed, cart drawer with free-shipping progress, coupon codes, Stripe card or cash-on-delivery checkout, saved addresses, order history with timeline, cancel/refund, pay-later, printable invoice, guest order tracking, newsletter, contact form, dark mode, fully responsive.
+
+**Admin (`/admin`):** sales dashboard (revenue, orders, AOV, customers, charts, top products, category revenue, low stock), products CRUD with image upload and bulk actions, categories, orders with status workflow, tracking numbers, refunds and CSV export, customers (roles, blocking, history), review moderation and replies, coupons, hero banners, inbox, subscribers export, store settings (name, shipping, tax, COD, announcement, contact, social).
+
+## Build
+
+```bash
+npm run build      # outputs dist/
+firebase deploy    # hosting config in firebase.json
+```
